@@ -1,6 +1,7 @@
 # HMSIN
-Tools for HP-41
-This is a program developed for the HP-41 to make it easier to enter a time: hours:minutes:seconds. 
+A tool for HP-41
+
+This is a program developed for the HP-41 to make it easier to enter a time: hour:minutes:seconds. 
 
 The program is written in MCODE and is therefore particularly fast. It validates the input and stores a time in register X that is compatible with the functions of the TIME module or the HP-41CX.
 
