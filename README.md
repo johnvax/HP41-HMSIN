@@ -1,7 +1,7 @@
 # HMSIN
 A tool for HP-41
 
-This program is developed for the HP-41 to make it easier to enter a time in format <code>HH:MM:SS</code> (where HH is hour, MM are minutes, SS are seconds), HH can be in range 00 - 23 (hr). 
+This program is developed for the HP-41 to make entering a time easier. Time in format <code>HH:MM:SS</code> where HH is hour, MM are minutes, SS are seconds. HH can be in range 00 - 23 (hr). 
 
 The program is written in MCODE and is therefore particularly fast. It validates the input and stores a time in register X that is compatible with the functions of the TIME module or the HP-41CX.
 
