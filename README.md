@@ -5,7 +5,7 @@ This program is developed for the HP-41 to make it easier to enter a time in for
 
 The program is written in MCODE and is therefore particularly fast. It validates the input and stores a time in register X that is compatible with the functions of the TIME module or the HP-41CX.
 
-Once the programme has been entered, simply type 
+Once the program has been entered, simply type 
 
 <code>XEQ HMSIN </code>
 <br>
