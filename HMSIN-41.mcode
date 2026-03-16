@@ -1,0 +1,235 @@
+;===========================================================================================
+;Copyright (C) 2025 Jean-Michel Vansteene
+;
+;This program is free software: you can redistribute it and/or modify it under the terms of
+; the GNU General Public License as published by the Free Software Foundation, either 
+; version 3 of the License, or (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; 
+; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. 
+; See the GNU General Public License for more details.
+; 
+; You should have received a copy of the GNU General Public License along with this program. 
+; If not, see <https://www.gnu.org/licenses/>.
+; 
+; 2025/09/07 : Forst release
+;===========================================================================================
+LBBACK	149	?XQ 0952		; [ENCP00]
+	024
+	278	READ 9(Q)
+
+	27E	C=C-1 [MS]
+	049	?C GO
+	037	0D12			; ABTSEQ
+
+	0BE	A<>C [MS]
+	33C	RCR 1
+	0BE	A<>C [MS]
+	268	WRIT 9(Q)
+	3D9	?XQ 07F6		; [ENLCD]
+	01C
+	130	LDI [S&X]
+	020
+	3A8	WRIT 14(d)
+	1A3	JNC @LBLN1 [+52]
+
+LBENDX	28C	?FSET 7 		; dot has been pressed
+	01B	JNC +03
+	2C4	CLRF 13			; then program is stopped
+	03B	JNC +07			
+
+	130	LDI S&X			; not a number and not a dot
+	370	HEX: 370		; R/S key pressed ?
+	106	A=C S&X
+	0B0	C=N
+	366	?A#C S&X
+	157	JC @LBLN1 [+42]
+;
+; Dot or R/S pressed
+;
+	149	?XQ 0952		; [ENCP00]
+	024
+	278	READ 9(Q)
+
+	11E	A=C [MS]		; décale du nombre de chiffres +1
+	09E	B=A [MS]
+	05E	C=0 [MS]
+	
+	33C	RCR 1 			; When 6 digits, shift 1 right
+	1BE	A=A-1 [MS]		; When 1 digit, shift 2 right
+	3F3	JNC -2			; underflow runs one more time
+
+	046	C=0 [S&X]
+	07E	A<>B [MS]
+	1BE	A=A-1 [MS]
+	35E	?A#0 [MS]
+	013	JNC +2
+	226	C=C+1 [S&X]		; 
+
+	0E8	WRIT 3(X)
+	
+LBEND	3C1	?XQ CLLCDE
+	0B0
+	149	?XQ ENCP00
+	024
+	261	?XQ RSTKB
+	000
+	215	?XQ RSTSQ
+	00C
+	3E0	RTN
+
+; just to skip to @LBBACK
+	26B	JNC @LBBACK [-51]
+
+; NAME
+	; HMSIN
+	08E
+	009
+	013
+	00D
+	008
+
+HMSIN	04E	C=0 [ALL]
+	268	WRIT 9(Q)
+	3C1	?XQ 2CF0		; [CLLCDE]
+	0B0
+	3BD	?XQ 07EF		; [MSG]
+	01C	
+	008	"HMS: _"
+	00D
+	093
+	220
+
+LBLN1	115	?XQ 0E45 		; [NEXT1]
+	038
+	373	JNC @LBBACK [-18]	; Press <-
+
+	00C	?FSET 3
+	24B	JNC LBLENDX [-55]	; C to X
+
+	149	?XQ 0952		; [ENCP00]
+	024
+	278	READ 9(Q)		
+	2FE	?C≠0 [MS]
+	047	JC @LBLC2 [+8]		; Goto 2nd digit if C<>0
+
+;=======================================================================================
+; DIGIT 1
+;=======================================================================================
+LBLC1	2DC	R=13			; chek if digit is in range [0-2]
+	0D0	LD@R 3			; 
+	31E	?A<C [MS]		;
+	16B	JNC @LBDIS [+45]	; 
+		
+LBLC11	384	CLRF 0
+	05E	C=0 [MS]
+	0C3 	JNC @LBLSV [+24]
+
+;=======================================================================================
+; DIGIT 2 :
+;=======================================================================================
+LBLC2	27E	C=C-1 [MS]		;
+	2FE	?C≠0 [MS]		;
+	157	JC @LBLC3 [+42]		;
+;
+; If digit 1 = 2 then next input is in range [0-4]
+;
+	158	M=C [ALL]
+	33C	RCR 1			;
+	09E	B=A [MS]		; backup input
+	11E	A=C [MS]		; A[MS] = first digit entered
+
+	2DC	R=13
+	090	LD@R 2			; Prepare limit 0-1
+
+	31E	?A<C [MS]		;
+	013	JNC @LBC21 [+2]
+	388	SETF 0
+
+LBC21	198	C=M [ALL]		;
+	07E	A<>B [MS]		;
+	38C	?FSET 0
+	02F	JC @LBC22 [+5]
+	2DC	R=13
+	110	LD@R 4			; is digit < 4 ?
+	31E	?A<C [MS]
+	0B3	JNC @LBDIS [+22]
+
+LBC22	05E	C=0 [MS]
+	23E	C=C+1 [MS]		; number of already entered digits
+	388	SETF 0			; Need a ":"
+
+;=======================================================================================
+; BACKUP AND DISPLAY
+; input is in A[MS]
+;=======================================================================================
+LBLSV	23E	C=C+1 [MS]
+	0BE	C<>A [MS]
+	2FC	RCR 13			; C[0] = input
+	0BE	C<>A [MS]
+	268	WRIT 9(Q)
+
+LBLAFF	0E6	C<>B [S&X]
+	3D9	?XQ 07F6		; [ENLCD]
+	01C
+
+	0E6	C<>B [S&X]
+	21C	R=2			;
+	010	LD@R 0
+	38C	?FSET 0			; 
+	01B	JNC +03
+	2D0	LD@R 11
+	013	JNC +02
+	0D0	LD@R 03
+
+	3E8	WRITE 15(e)
+	23B	JNC @LBLN1 [-57]
+
+LBDIS	3D9	?XQ 07F6		; [ENLCD]
+	01C
+	223	JNC @LBLN1 [-60]
+
+;=======================================================================================
+; DIGIT 3
+;=======================================================================================
+LBLC3	23E	C=C+1 [MS]		; 
+	070	N=C [ALL]		; 
+	384	CLRF 0
+	09E	B=A [MS]		; 
+	11E	A=C [MS]		; 
+
+	2DC	R=13			; 
+	190	LD@R 6			; 
+	31E	?A<C [MS]		; 
+	3AB	JNC @LBDIS [-11]
+
+	3DC	R=R+1			;
+	050	LD@R 1			; odd or even ?
+	3B0	C=C AND A		;
+	2FE	?C≠0 [MS]		; 
+	013	JNC [+2]
+	388	SETF 0			;
+
+; si impair vérifier limite 0-5
+	38C	?FSET 0
+	03F	JC  @LBC33 [+7]
+
+	07E	A<>B [MS]		;
+	3DC    	R=R+1
+	190	LD@R 6
+	31E	?A<C [MS]
+	343	JNC @LBDIS [-24]
+	07E	A<>B [MS]		;
+;
+; No ':' for the last digit
+;
+LBC33	3DC	R=R+1			;
+	150	LD@R 5
+	25E	C=A-C [MS]		;
+	2FE	?C≠0 [MS]		;
+	017	JC @LBC32 [+2]
+	384	CLRF 0
+
+LBC32	0B0	C=N [AL1L]		;
+A1E6	263	JNC @LBLSV [-52]
+
