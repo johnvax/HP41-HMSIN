@@ -11,7 +11,7 @@ Once the program has been entered, simply type
 <br>
 <code>HMSIN: _</code>
 
-and enter HHMMSS in turn; the colons are generated automatically to display <code>HH:MM:SS</code> 
+and enter HHMMSS; the colons are generated automatically to display <code>HH:MM:SS</code> 
 Pressing the backspace key <code><-</code> deletes the last digit.
 Pressing the dot key ends the entry and the time value is stored in X register.
 When the command is executed in program mode, pressing the R/S key saves the time in X register and the program continues.
