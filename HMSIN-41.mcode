@@ -210,7 +210,7 @@ LBLC3	23E	C=C+1 [MS]		;
 	013	JNC [+2]
 	388	SETF 0			;
 
-; si impair vérifier limite 0-5
+; if odd, check for limit = 0-5
 	38C	?FSET 0
 	03F	JC  @LBC33 [+7]
 
